@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Metaheuristik untuk Cloud Task Scheduling | Kelompok 6</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--or:#bb5500;--or2:#e8770f;--or3:#ffb36b;--cr:#fff4e8;--ink:#2b1500;--mu:#7a5a40;--bd:rgba(187,85,0,.22)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:#fff;color:var(--ink);font:16px/1.7 'DM Sans',system-ui,sans-serif;overflow-x:hidden}
+nav{position:sticky;top:0;z-index:9;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:12px 8px;padding-top:max(12px,env(safe-area-inset-top));background:rgba(255,255,255,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
+nav a{color:var(--mu);text-decoration:none;font-size:14px;font-weight:500;padding:6px 14px;border-radius:99px;transition:.2s}nav a:hover{background:var(--or);color:#fff}
+.herobg{position:relative;overflow:hidden;background:linear-gradient(135deg,#a84a00,#bb5500 45%,#e8770f);color:#fff;padding-bottom:80px}
+.bub{position:absolute;border-radius:50%;background:rgba(255,255,255,.12);animation:fl 14s ease-in-out infinite alternate}
+.b1{width:46vmax;height:46vmax;top:-18vmax;right:-12vmax}.b2{width:26vmax;height:26vmax;bottom:-8vmax;left:-6vmax;animation-delay:-6s}.b3{width:12vmax;height:12vmax;top:30%;left:55%;background:rgba(255,255,255,.08);animation-delay:-3s}
+@keyframes fl{to{transform:translate(4vmax,3vmax) scale(1.15)}}
+.wave{position:absolute;left:0;bottom:-1px;width:100%;height:70px}
+section{max-width:1080px;margin:auto;padding:84px 20px 20px;position:relative}
+.hero{min-height:84vh;display:flex;flex-direction:column;justify-content:center}
+.tag{color:var(--or);letter-spacing:.22em;font-size:12px;font-weight:700;text-transform:uppercase}
+.hero .tag{color:#ffe2c2}
+h1{font-size:clamp(38px,8vw,86px);line-height:1.03;font-weight:900;margin:14px 0 18px}
+h1 em{font-style:normal;color:#ffe2c2}
+h2{font-size:clamp(28px,5vw,44px);font-weight:900;margin:4px 0 10px}
+h3{font-size:19px;margin-bottom:6px;color:var(--or)}
+p.l{color:var(--mu);max-width:700px;font-size:18px}
+.hero p.l{color:#fff}
+.btn{display:inline-block;margin-top:26px;padding:13px 28px;border-radius:99px;background:#fff;color:var(--or);border:0;cursor:pointer;font:inherit;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:.2s}.btn:hover{transform:translateY(-2px)}
+.btn.s{margin:0;padding:9px 18px;background:var(--or);color:#fff;box-shadow:none}.btn.s:hover{background:var(--or2)}.btn.s:disabled{opacity:.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:26px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(187,85,0,.08);transition:.3s}.card:hover{transform:translateY(-4px);border-color:var(--or)}
+.card p,.card li{color:var(--mu);font-size:15px}.card ol{padding-left:22px;margin-top:10px}.card li{margin-bottom:2px}.card b{color:var(--ink)}
+code,pre{font-family:ui-monospace,Consolas,monospace}
+pre{background:var(--cr);border:1px solid var(--bd);border-radius:12px;padding:14px;font-size:13px;overflow-x:auto;color:#8a3f00;margin-top:10px;line-height:1.6}
+.flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+.node{padding:14px 20px;border-radius:14px;border:1px solid var(--bd);background:var(--cr);text-align:center;font-weight:700}
+.node small{display:block;color:var(--mu);font-weight:400;font-size:12px}.ar{color:var(--or);font-size:24px}
+.band{background:var(--cr);margin-top:60px;padding-bottom:50px}.band section{padding-top:60px}
+.how{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;list-style:none;padding:0}
+.how li{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:10px 14px;font-size:14px;color:var(--mu);flex:1 1 220px}
+.how b{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--or);color:#fff}
+.lab{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;margin-top:22px}
+@media(max-width:820px){.lab{grid-template-columns:1fr}}
+canvas{width:100%;display:block;border-radius:16px;border:1px solid var(--bd);background:#fff}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+select,input[type=range]{accent-color:var(--or)}select{background:#fff;color:var(--ink);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;font:inherit}
+.st{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.st div{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:8px 12px;font-size:12px;color:var(--mu)}.st b{display:block;font-size:20px;color:var(--or)}
+.stp{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chip{display:flex;gap:8px;align-items:center;padding:8px 12px;border-radius:14px;background:#fff;border:1px solid var(--bd);font-size:13px;line-height:1.3;font-weight:500}
+.chip b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--cr);color:var(--or);flex:none}
+.chip small{display:block;color:var(--mu);font-size:11px;font-weight:400}
+.chip.nx{border:1.5px dashed var(--or)}
+.chip.on{background:var(--or);color:#fff;border:1px solid var(--or)}.chip.on b{background:#fff}.chip.on small{color:#ffe2c2}
+.msg{min-height:60px;padding:12px 14px;border-left:4px solid var(--or);background:#fff;border-radius:0 12px 12px 0;font-size:14px}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mu);margin-top:8px}.lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;border:1px solid #fff;box-shadow:0 0 0 1px var(--bd)}
+.pus{padding-top:70px}.pus p{color:var(--ink);max-width:820px;padding-left:2em;text-indent:-2em;margin-top:14px;font-size:16px}
+footer{background:var(--or);color:#ffe2c2;margin-top:70px;padding:28px 20px 36px;text-align:center;font-size:14px}
+.rv{opacity:0;transform:translateY(30px);transition:1s}.rv.on{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<nav><a href="#top">Beranda</a><a href="#latar">Cloud Scheduling</a><a href="#algo">Algoritma</a><a href="#lab">Lab Visual</a><a href="#demo">Demo</a><a href="#pustaka">Pustaka</a></nav>
+
+<header class="herobg" id="top">
+<div class="bub b1"></div><div class="bub b2"></div><div class="bub b3"></div>
+<section class="hero">
+<span class="tag">Kelompok 6 · Komputasi Awan (A)</span>
+<h1>Algoritma Metaheuristik<br><em>untuk Cloud Task Scheduling</em></h1>
+<p class="l">Pahami cara kerja <b>Cuckoo Optimization Algorithm (COA)</b> dan <b>Teaching-Learning-Based Optimization (TLBO)</b> lewat visualisasi yang bisa kamu mainkan sendiri.</p>
+<div><a class="btn" href="#lab">Coba Lab Visual →</a></div>
+</section>
+<svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,90 480,0 720,40 C960,80 1200,10 1440,40 L1440,80 L0,80Z" fill="#fff"/></svg>
+</header>
+
+<section id="latar" class="rv">
+<span class="tag">01 · Latar Belakang</span>
+<h2>Task scheduling di cloud itu seperti apa?</h2>
+<p class="l">Di cloud, banyak <b>task</b> dari pengguna harus dipetakan ke sejumlah <b>VM</b> yang kemampuannya berbeda. Tujuannya: selesai secepat mungkin (makespan kecil), murah, dan beban merata. Dengan n task dan m VM ada m<sup>n</sup> kemungkinan penugasan, sehingga mencari yang terbaik secara menyeluruh tidak realistis.</p>
+<div class="flow">
+<div class="node">Task<small>pekerjaan user</small></div><span class="ar">→</span>
+<div class="node">Scheduler<small>algoritma penjadwal</small></div><span class="ar">→</span>
+<div class="node">VM 1…m<small>MIPS berbeda-beda</small></div><span class="ar">→</span>
+<div class="node">Metrik<small>makespan, biaya, beban</small></div></div>
+<div class="grid">
+<div class="card"><h3>Tradisional</h3><p>FCFS, SJF, Round Robin. Sederhana dan cepat, tetapi aturannya tetap sehingga hasilnya belum tentu baik untuk beban yang beragam.</p></div>
+<div class="card"><h3>Heuristik</h3><p>Min-Min, Max-Min. Memakai aturan praktis untuk mencari solusi yang cukup baik dengan cepat, tanpa jaminan optimal.</p></div>
+<div class="card"><h3>Metaheuristik ★</h3><p>GA, PSO, ACO, <b>COA</b>, <b>TLBO</b>. Menjelajahi ruang solusi dengan populasi dan unsur acak untuk mendekati solusi terbaik. Inilah fokus presentasi ini.</p></div>
+</div>
+</section>
+
+<section id="algo" class="rv">
+<span class="tag">02 · Cara Kerja</span>
+<h2>Dua algoritma, dua inspirasi</h2>
+<div class="grid">
+<div class="card"><h3>🐦 Cuckoo Optimization Algorithm</h3>
+<p>Terinspirasi burung cuckoo yang menitipkan telur di sarang burung lain. Telur yang lolos tumbuh jadi cuckoo baru, lalu kelompok cuckoo bermigrasi ke habitat terbaik. Satu cuckoo = satu solusi.</p>
+<pre>ELR = α × (telur_ini / total_telur) × (var_hi − var_low)
+λ ~ U(0,1)      φ ~ U(−ω, ω)</pre>
+<ol>
+<li>Inisialisasi habitat cuckoo</li><li>Alokasikan telur ke tiap cuckoo</li><li>Tentukan ELR tiap cuckoo</li><li>Bertelur di sarang acak dalam ELR</li><li>Musnahkan ±10% telur terburuk</li><li>Telur menetas dan tumbuh</li><li>Evaluasi habitat cuckoo baru</li><li>Batasi populasi ke Nmax terbaik</li><li>Klasterisasi K-means, tentukan goal habitat</li><li>Migrasi menuju goal habitat</li><li>Cek berhenti; jika belum, ulangi dari langkah 2</li></ol></div>
+<div class="card"><h3>🎓 Teaching-Learning-Based Optimization</h3>
+<p>Terinspirasi kelas: solusi terbaik menjadi guru, populasi menjadi murid. Murid belajar dari guru, lalu saling belajar. Hanya butuh ukuran populasi dan jumlah generasi.</p>
+<pre>Teacher : X_new = X_old + r(X_teacher − T_F·M)
+Learner : X_new = X_old + r(Xi − Xj)  jika f(Xi) &lt; f(Xj)
+          X_new = X_old + r(Xj − Xi)  jika sebaliknya
+T_F = 1 atau 2 (acak)    M = rata-rata populasi</pre>
+<ol>
+<li>Definisikan masalah dan parameter</li><li>Inisialisasi populasi acak</li><li>Teacher phase, terima jika lebih baik</li><li>Learner phase, terima jika lebih baik</li><li>Cek terminasi; jika belum, ulangi dari langkah 3</li></ol></div>
+</div>
+</section>
+
+<div class="band"><section id="lab" class="rv">
+<span class="tag">03 · Lab Visualisasi</span>
+<h2>Lihat populasi mencari titik terendah</h2>
+<p class="l">Fungsi uji F1 dari paper COA (banyak lembah lokal). Daerah oranye tua = nilai kecil (bagus), krem = nilai besar. Cincin di (9,039; 8,668) adalah optimum global.</p>
+<ol class="how">
+<li><b>1</b>Pilih algoritma dan jumlah populasi.</li>
+<li><b>2</b>Tekan <u>Step</u> untuk satu tahap, atau <u>Play</u> untuk otomatis.</li>
+<li><b>3</b>Lihat penanda tahap bernomor, lalu cocokkan dengan nomor langkah di bagian 02.</li></ol>
+<div class="lab">
+<div><canvas id="cv" width="600" height="600"></canvas><div class="lg" id="lg"></div></div>
+<div>
+<div class="ctl"><select id="al"><option>COA</option><option>TLBO</option></select>
+<label>Populasi <input type="range" id="np" min="6" max="40" value="14"> <span id="npv">14</span></label></div>
+<div class="ctl"><button class="btn s" id="pl">▶ Play</button><button class="btn s" id="sp">Step</button><button class="btn s" id="rs">Reset</button>
+<label>Kecepatan <input type="range" id="sd" min="1" max="10" value="4"></label></div>
+<div class="st"><div>Iterasi<b id="it">0</b></div><div>Terbaik<b id="bf">-</b></div><div>Tahap<b id="sg">-</b></div></div>
+<div class="stp" id="stp"></div>
+<div class="msg" id="ms"></div>
+<canvas id="ch" width="600" height="220" style="margin-top:12px"></canvas>
+<p style="color:var(--mu);font-size:12px;margin-top:6px">Kurva: nilai terbaik per iterasi (turun = makin baik). Gerak cuckoo di 2D diterapkan sebagai rotasi sudut φ pada vektor perpindahan menuju goal, sebuah interpretasi implementasi karena paper hanya menggambarkannya lewat gambar. Garis putus-putus = kandidat tahap berikutnya.</p>
+</div></div>
+</section></div>
+
+<section id="demo" class="rv">
+<span class="tag">04 · Demo Scheduling</span>
+<h2>Dipakai untuk menjadwalkan task ke VM</h2>
+<p class="l">18 task (panjang berbeda, dalam MI) dipetakan ke 4 VM (10, 15, 20, 30 MIPS). Setiap solusi berupa 18 bilangan kontinu yang dibulatkan ke bawah menjadi indeks VM. Fitness = makespan (waktu VM paling lama selesai). Pembanding: Round Robin (task ke-i ke VM i mod 4).</p>
+<ol class="how">
+<li><b>1</b>Pilih algoritma.</li><li><b>2</b>Tekan Jalankan, lihat penugasan dan kurva makin baik.</li><li><b>3</b>Bandingkan dengan garis Round Robin.</li></ol>
+<div class="ctl" style="margin-top:20px"><select id="da"><option>COA</option><option>TLBO</option></select><button class="btn s" id="dr">⚡ Jalankan 60 iterasi</button><span id="dm" style="color:var(--mu);font-size:14px"></span></div>
+<canvas id="bv" width="900" height="300"></canvas>
+<canvas id="dc" width="900" height="200" style="margin-top:12px"></canvas>
+</section>
+
+<section id="pustaka" class="pus rv">
+<h2>Daftar Pustaka</h2>
+<p>Rajabioun, R. (2011). Cuckoo Optimization Algorithm. <i>Applied Soft Computing</i>, 11, 5508–5518.</p>
+<p>Rao, R.V., Savsani, V.J., Vakharia, D.P. (2011). Teaching–learning-based optimization: A novel method for constrained mechanical design optimization problems. <i>Computer-Aided Design</i>, 43, 303–315.</p>
+</section>
+<footer>Kelompok 6 · Komputasi Awan (A)</footer>
+
+<script>
+const $=s=>document.querySelector(s),clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),R=Math.random;
+/* ===== Mesin algoritma (generik, minimisasi) ===== */
+function mk(name,f,D,lo,hi,N){
+ const cl=v=>clamp(v,lo,hi),rp=()=>Array.from({length:D},()=>lo+R()*(hi-lo));
+ const T=name=='TLBO';
+ const a={name,P:Array.from({length:N},rp),F:[],stage:0,last:-1,iter:0,eggs:[],goal:-1,grp:[],elr:0,bestF:1e9,bestX:null,hist:[],S:T?2:3,
+  names:T?['Teacher phase','Learner phase']:['Bertelur','Seleksi & klaster','Migrasi'],
+  ref:T?['langkah 3','langkah 4']:['langkah 2–4','langkah 5–9','langkah 10–11']};
+ const upd=(x,v)=>{if(v<a.bestF){a.bestF=v;a.bestX=x.slice()}};
+ a.F=a.P.map(f);a.P.forEach((x,i)=>upd(x,a.F[i]));a.hist.push(a.bestF);
+ a.teacher=()=>a.F.indexOf(Math.min(...a.F));
+ const acc=(i,y)=>{const v=f(y);if(v<a.F[i]){a.P[i]=y;a.F[i]=v;upd(y,v)}};
+ a.next=()=>{const P=a.P;let m;
+  if(T){
+   if(a.stage==0){const t=P[a.teacher()].slice(),M=t.map((_,d)=>P.reduce((s,p)=>s+p[d],0)/N);
+    P.forEach((x,i)=>{const TF=1+Math.round(R());acc(i,x.map((v,d)=>cl(v+R()*(t[d]-TF*M[d]))))});
+    m='semua murid bergeser mendekati guru (bintang emas) dan dipakai jika hasilnya lebih baik.'}
+   else{P.forEach((x,i)=>{let j;do j=Math.floor(R()*N);while(j==i);const y=P[j],s=f(x)<f(y)?1:-1;
+     acc(i,x.map((v,d)=>cl(v+R()*s*(x[d]-y[d]))))});
+    m='tiap murid belajar dari murid acak lain, mendekat jika lawan lebih baik. Lalu langkah 5: cek terminasi, jika belum ulangi dari langkah 3.'}
+  }else{
+   if(a.stage==0){const E=P.map(()=>5+Math.floor(R()*6)),tot=E.reduce((s,v)=>s+v,0);a.eggs=[];
+    P.forEach((p,i)=>{const e=1*E[i]/tot*(hi-lo);if(!i)a.elr=e;for(let k=0;k<E[i];k++){const x=p.map(v=>cl(v+(R()*2-1)*e));a.eggs.push({x,f:f(x)})}});
+    m='tiap cuckoo diberi telur, dihitung ELR (lingkaran putus-putus), lalu telur (titik putih) disebar di sarang acak dalam radius itu.'}
+   else if(a.stage==1){a.eggs.sort((p,q)=>p.f-q.f);a.eggs.length-=Math.floor(.1*a.eggs.length);
+    const pool=P.map((x,i)=>({x,f:a.F[i]})).concat(a.eggs).sort((p,q)=>p.f-q.f).slice(0,N);
+    a.P=pool.map(o=>o.x);a.F=pool.map(o=>o.f);a.eggs=[];a.P.forEach((x,i)=>upd(x,a.F[i]));
+    const K=3,C=Array.from({length:K},()=>a.P[Math.floor(R()*N)].slice());
+    for(let r=0;r<6;r++){a.grp=a.P.map(x=>{let b=0,bd=1e18;C.forEach((c,k)=>{const d=c.reduce((s,v,i)=>s+(v-x[i])**2,0);if(d<bd){bd=d;b=k}});return b});
+     C.forEach((c,k)=>{const mem=a.P.filter((_,i)=>a.grp[i]==k);if(mem.length)c.forEach((_,d)=>c[d]=mem.reduce((s,p)=>s+p[d],0)/mem.length)})}
+    let bk=-1,bm=1e18;for(let k=0;k<K;k++){const ix=a.P.map((_,i)=>i).filter(i=>a.grp[i]==k);if(!ix.length)continue;const mn=ix.reduce((s,i)=>s+a.F[i],0)/ix.length;if(mn<bm){bm=mn;bk=k}}
+    a.goal=a.P.map((_,i)=>i).filter(i=>a.grp[i]==bk).sort((i,j)=>a.F[i]-a.F[j])[0];
+    m='±10% telur terburuk dibuang, telur yang lolos tumbuh, hanya Nmax cuckoo terbaik bertahan. K-means (k=3) membentuk 3 kelompok warna; kelompok dengan profit rata-rata terbaik menentukan goal (bintang emas).'}
+   else{const g=a.P[a.goal].slice(),W=Math.PI/6;
+    a.P=a.P.map(x=>{const dl=g.map((v,d)=>R()*(v-x[d])),ph=(R()*2-1)*W,A=D==2?0:Math.floor(R()*D),B=D==2?1:(A+1+Math.floor(R()*(D-1)))%D,c=Math.cos(ph),s=Math.sin(ph),u=dl[A],w=dl[B];
+     dl[A]=u*c-w*s;dl[B]=u*s+w*c;return x.map((v,d)=>cl(v+dl[d]))});
+    a.F=a.P.map(f);a.P.forEach((x,i)=>upd(x,a.F[i]));a.goal=-1;
+    m='setiap cuckoo terbang sebagian jarak (λ acak) menuju goal dengan sedikit penyimpangan sudut φ. Lalu langkah 11: cek berhenti, jika belum ulangi dari langkah 2.'}
+  }
+  a.last=a.stage;a.stage++;if(a.stage==a.S){a.stage=0;a.iter++;a.hist.push(a.bestF)}
+  return m};
+ return a}
+/* ===== Grafik garis ===== */
+function chart(cv,h,col){const x=cv.getContext('2d'),W=cv.width,H=cv.height;x.clearRect(0,0,W,H);
+ if(h.length<2)return;const mx=Math.max(...h),mn=Math.min(...h),r=(mx-mn)||1;
+ x.strokeStyle='rgba(187,85,0,.12)';for(let i=1;i<4;i++){x.beginPath();x.moveTo(0,H*i/4);x.lineTo(W,H*i/4);x.stroke()}
+ x.strokeStyle=col;x.lineWidth=3;x.beginPath();h.forEach((v,i)=>{const px=10+i/(h.length-1)*(W-20),py=H-12-(v-mn)/r*(H-24);i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
+ x.fillStyle='#7a5a40';x.font='13px sans-serif';x.fillText(mx.toFixed(2),12,16);x.fillText(mn.toFixed(2),12,H-16)}
+/* ===== Lab visual ===== */
+const F1=v=>v[0]*Math.sin(4*v[0])+1.1*v[1]*Math.sin(2*v[1]);
+const hm=document.createElement('canvas');hm.width=hm.height=150;
+(()=>{const x=hm.getContext('2d');for(let i=0;i<150;i++)for(let j=0;j<150;j++){const v=clamp((F1([i/15,10-j/15])+19)/40,0,1);x.fillStyle=`hsl(28,${100-v*25}%,${36+v*60}%)`;x.fillRect(i,j,1,1)}})();
+const cv=$('#cv'),cx=cv.getContext('2d'),S=600,px=v=>v/10*S,py=v=>(1-v/10)*S;
+let A,run=null,msg='';
+const INK='#1f1300',GC=[INK,'#1d4e89','#8a1c5c'];
+const dot=(x,y,r,c)=>{cx.fillStyle=c;cx.strokeStyle='#fff';cx.lineWidth=2;cx.beginPath();cx.arc(px(x),py(y),r,0,7);cx.fill();cx.stroke()},
+star=(x,y)=>{cx.fillStyle='#ffd166';cx.strokeStyle=INK;cx.lineWidth=2;cx.beginPath();for(let i=0;i<10;i++){const r=i%2?7:17,a=i*Math.PI/5-Math.PI/2;cx.lineTo(px(x)+r*Math.cos(a),py(y)+r*Math.sin(a))}cx.closePath();cx.fill();cx.stroke()};
+function stp(){$('#stp').innerHTML=A.names.map((n,i)=>`<div class="chip ${i==A.last?'on':''} ${i==(A.last+1)%A.S?'nx':''}"><b>${i+1}</b><span>${n}<small>${A.ref[i]}</small></span></div>`).join('')}
+function draw(){cx.drawImage(hm,0,0,S,S);
+ cx.strokeStyle=INK;cx.lineWidth=6;cx.beginPath();cx.arc(px(9.039),py(8.668),13,0,7);cx.stroke();
+ cx.strokeStyle='#fff';cx.lineWidth=3;cx.beginPath();cx.arc(px(9.039),py(8.668),13,0,7);cx.stroke();
+ if(A.name=='COA'&&A.eggs.length){cx.setLineDash([6,5]);cx.strokeStyle=INK;cx.lineWidth=2;cx.beginPath();cx.arc(px(A.P[0][0]),py(A.P[0][1]),A.elr/10*S,0,7);cx.stroke();cx.setLineDash([]);
+  A.eggs.forEach(e=>{cx.fillStyle='#fff';cx.strokeStyle=INK;cx.lineWidth=1.2;cx.beginPath();cx.arc(px(e.x[0]),py(e.x[1]),3.8,0,7);cx.fill();cx.stroke()})}
+ A.P.forEach((p,i)=>dot(p[0],p[1],7,A.name=='COA'&&A.grp.length&&A.goal>=0?GC[A.grp[i]]:INK));
+ if(A.name=='TLBO'){const t=A.P[A.teacher()];star(t[0],t[1])}else if(A.goal>=0){const g=A.P[A.goal];star(g[0],g[1])}
+ $('#it').textContent=A.iter;$('#bf').textContent=A.bestF.toFixed(3);$('#sg').textContent=A.last<0?'Awal':`${A.last+1}/${A.S}`;
+ $('#ms').textContent=A.last<0?msg:`Tahap ${A.last+1}/${A.S} · ${A.names[A.last]} (${A.ref[A.last]}): ${msg}`;
+ stp();chart($('#ch'),A.hist,'#bb5500')}
+function reset(){stop();A=mk($('#al').value,F1,2,0,10,+$('#np').value);
+ msg=A.name=='TLBO'?'Langkah 1–2 selesai: parameter ditetapkan dan populasi murid dibangkitkan acak. Tekan Step untuk Teacher phase.':'Langkah 1 selesai: habitat cuckoo dibangkitkan acak. Tekan Step untuk tahap 1 (bertelur).';
+ $('#lg').innerHTML=A.name=='TLBO'?'<span><i style="background:#1f1300"></i>murid</span><span><i style="background:#ffd166"></i>guru (bintang)</span>':'<span><i style="background:#1f1300"></i><i style="background:#1d4e89"></i><i style="background:#8a1c5c"></i>3 kelompok cuckoo</span><span><i style="background:#fff"></i>telur</span><span><i style="background:#ffd166"></i>goal (bintang)</span>';draw()}
+const step=()=>{msg=A.next();draw()};
+function stop(){clearTimeout(run);run=null;$('#pl').textContent='▶ Play'}
+$('#pl').onclick=()=>{if(run)return stop();$('#pl').textContent='⏸ Pause';const go=()=>{step();run=setTimeout(go,1100-$('#sd').value*100)};go()};
+$('#sp').onclick=()=>{stop();step()};$('#rs').onclick=reset;$('#al').onchange=reset;
+$('#np').oninput=e=>{$('#npv').textContent=e.target.value;reset()};
+reset();
+/* ===== Demo scheduling ===== */
+const T=18,M=4,MIPS=[10,15,20,30];let s0=11;const sr=()=>(s0=s0*16807%2147483647)/2147483647,L=Array.from({length:T},()=>20+Math.floor(sr()*100));
+const dec=x=>x.map(v=>Math.min(M-1,Math.floor(v))),
+tm=x=>{const t=Array(M).fill(0);dec(x).forEach((m,i)=>t[m]+=L[i]/MIPS[m]);return Math.max(...t)},
+RR=tm(Array.from({length:T},(_,i)=>i%M+.5));
+const bv=$('#bv'),bx=bv.getContext('2d');
+function bars(x){bx.clearRect(0,0,900,300);const sc=RR*1.1,asg=dec(x),cur=Array(M).fill(0);
+ asg.forEach((m,i)=>{const w=L[i]/MIPS[m]/sc*780,X=90+cur[m],Y=24+m*62;cur[m]+=w;bx.fillStyle=`hsl(${22+(i%6)*5},88%,${30+(i%6)*7}%)`;bx.fillRect(X,Y,w-2,46);bx.fillStyle='#fff';bx.font='bold 12px sans-serif';if(w>22)bx.fillText('T'+(i+1),X+5,Y+28)});
+ bx.fillStyle='#7a5a40';bx.font='14px sans-serif';for(let m=0;m<M;m++)bx.fillText('VM'+(m+1),20,52+m*62);
+ bx.strokeStyle=INK;bx.lineWidth=2;bx.setLineDash([6,5]);bx.beginPath();bx.moveTo(90+RR/sc*780,10);bx.lineTo(90+RR/sc*780,282);bx.stroke();bx.setLineDash([]);bx.fillStyle=INK;bx.fillText('Round Robin',Math.max(95,90+RR/sc*780-86),296)}
+bars(Array.from({length:T},(_,i)=>i%M+.5));$('#dm').textContent='Round Robin: makespan '+RR.toFixed(2)+' (garis putus-putus)';
+$('#dr').onclick=()=>{const B=mk($('#da').value,tm,T,0,M-.001,24);let k=0;$('#dr').disabled=true;
+ const go=()=>{for(let s=0;s<B.S;s++)B.next();bars(B.bestX);chart($('#dc'),B.hist,'#bb5500');
+  $('#dm').textContent=`${B.name}: makespan ${B.bestF.toFixed(2)} vs Round Robin ${RR.toFixed(2)} (membaik ${((1-B.bestF/RR)*100).toFixed(1)}%)`;
+  if(++k<60)setTimeout(go,60);else $('#dr').disabled=false};go()};
+/* ===== Animasi muncul saat scroll ===== */
+const io=new IntersectionObserver(e=>e.forEach(i=>i.isIntersecting&&i.target.classList.add('on')),{threshold:.08});document.querySelectorAll('.rv').forEach(e=>io.observe(e));
+</script>
+</body>
+</html>
